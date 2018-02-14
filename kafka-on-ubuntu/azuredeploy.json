@@ -130,14 +130,14 @@
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
     "computerNamePrefix": "kafkanode",
-    "scriptUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/kafka-on-ubuntu/",
+    "scriptUrl": "https://raw.githubusercontent.com/lizzha/azure-quickstart-templates/test/kafka-on-ubuntu/",
     "templateUrl": "[variables('scriptUrl')]",
     "sharedTemplateName": "shared-resources",
     "jumpboxTemplateName": "jumpbox-resources-",
     "tshirtSizeS": {
       "numberOfZookeeperInstances": 1,
       "numberOfKafkaInstances": 3,
-      "vmSize": "Standard_A1"
+      "vmSize": "Standard_D5_v2"
     },
     "tshirtSizeM": {
       "numberOfZookeeperInstances": 3,
