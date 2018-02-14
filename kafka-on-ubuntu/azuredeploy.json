@@ -137,7 +137,7 @@
     "tshirtSizeS": {
       "numberOfZookeeperInstances": 1,
       "numberOfKafkaInstances": 3,
-      "vmSize": "Standard_D5_v2"
+      "vmSize": "Standard_G3"
     },
     "tshirtSizeM": {
       "numberOfZookeeperInstances": 3,
