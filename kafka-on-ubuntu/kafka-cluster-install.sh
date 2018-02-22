@@ -122,7 +122,7 @@ install_java()
     apt-get -y update 
     echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
     echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-    apt-get -y install oracle-java7-installer
+    apt-get -y install oracle-java9-installer
 }
 
 # Expand a list of successive IP range defined by a starting address prefix (e.g. 10.0.0.1) and the number of machines in the range
@@ -155,60 +155,66 @@ expand_ip_range() {
 # Install Zookeeper - can expose zookeeper version
 install_zookeeper()
 {
-	mkdir -p /var/lib/zookeeper
-	cd /var/lib/zookeeper
-	wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.9.tar.gz"
-	tar -xvf "zookeeper-3.4.9.tar.gz"
-
-	touch zookeeper-3.4.9/conf/zoo.cfg
-
-	echo "tickTime=2000" >> zookeeper-3.4.9/conf/zoo.cfg
-	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.9/conf/zoo.cfg
-	echo "clientPort=2181" >> zookeeper-3.4.9/conf/zoo.cfg
-	echo "initLimit=5" >> zookeeper-3.4.9/conf/zoo.cfg
-	echo "syncLimit=2" >> zookeeper-3.4.9/conf/zoo.cfg
-	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
-	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
-
-	echo $(($1+1)) >> /var/lib/zookeeper/myid
-
-	zookeeper-3.4.9/bin/zkServer.sh start
+#	mkdir -p /var/lib/zookeeper
+#	cd /var/lib/zookeeper
+#	wget "http://mirrors.ukfast.co.uk/sites/ftp.apache.org/zookeeper/stable/zookeeper-3.4.9.tar.gz"
+#	tar -xvf "zookeeper-3.4.9.tar.gz"
+#
+#	touch zookeeper-3.4.9/conf/zoo.cfg
+#
+#	echo "tickTime=2000" >> zookeeper-3.4.9/conf/zoo.cfg
+#	echo "dataDir=/var/lib/zookeeper" >> zookeeper-3.4.9/conf/zoo.cfg
+#	echo "clientPort=2181" >> zookeeper-3.4.9/conf/zoo.cfg
+#	echo "initLimit=5" >> zookeeper-3.4.9/conf/zoo.cfg
+#	echo "syncLimit=2" >> zookeeper-3.4.9/conf/zoo.cfg
+#	# OLD Test echo "server.1=${ZOOKEEPER_IP_PREFIX}:2888:3888" >> zookeeper-3.4.6/conf/zoo.cfg
+#	$(expand_ip_range_for_server_properties "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}")
+#
+#	echo $(($1+1)) >> /var/lib/zookeeper/myid
+#
+#	zookeeper-3.4.9/bin/zkServer.sh start
+  curl -O http://www-eu.apache.org/dist/kafka/1.0.0/kafka_2.12-1.0.0.tgz
+  tar xzvf kafka_2.12-1.0.0.tgz
+  cd kafka_2.12-1.0.0/
 }
 
 # Install kafka
 install_kafka()
 {
-	cd /usr/local
-	name=kafka
-	version=${KF_VERSION}
-	#this Kafka version is prefix same used for all versions
-	kafkaversion=2.10
-	description="Apache Kafka is a distributed publish-subscribe messaging system."
-	url="https://kafka.apache.org/"
-	arch="all"
-	section="misc"
-	license="Apache Software License 2.0"
-	package_version="-1"
-	src_package="kafka_${kafkaversion}-${version}.tgz"
-	download_url=http://mirror.sdunix.com/apache/kafka/${version}/${src_package} 
+#	cd /usr/local
+#	name=kafka
+#	version=${KF_VERSION}
+#	#this Kafka version is prefix same used for all versions
+#	kafkaversion=2.10
+#	description="Apache Kafka is a distributed publish-subscribe messaging system."
+#	url="https://kafka.apache.org/"
+#	arch="all"
+#	section="misc"
+#	license="Apache Software License 2.0"
+#	package_version="-1"
+#	src_package="kafka_${kafkaversion}-${version}.tgz"
+#	download_url=http://mirror.sdunix.com/apache/kafka/${version}/${src_package} 
 
-	rm -rf kafka
-	mkdir -p kafka
-	cd kafka
-	#_ MAIN _#
-	if [[ ! -f "${src_package}" ]]; then
-	  wget ${download_url}
-	fi
-	tar zxf ${src_package}
-	cd kafka_${kafkaversion}-${version}
-	
+#	rm -rf kafka
+#	mkdir -p kafka
+#	cd kafka
+#	#_ MAIN _#
+#	if [[ ! -f "${src_package}" ]]; then
+#	  wget ${download_url}
+#	fi
+#	tar zxf ${src_package}
+#	cd kafka_${kafkaversion}-${version}
+	curl -O http://www-eu.apache.org/dist/kafka/1.0.0/kafka_2.12-1.0.0.tgz
+  tar xzvf kafka_2.12-1.0.0.tgz
+  cd kafka_2.12-1.0.0/
+
 	sed -r -i "s/(broker.id)=(.*)/\1=${BROKER_ID}/g" config/server.properties 
 	sed -r -i "s/(zookeeper.connect)=(.*)/\1=$(join , $(expand_ip_range "${ZOOKEEPER_IP_PREFIX}-${INSTANCE_COUNT}"))/g" config/server.properties 
-#	cp config/server.properties config/server-1.properties 
-#	sed -r -i "s/(broker.id)=(.*)/\1=1/g" config/server-1.properties 
-#	sed -r -i "s/^(port)=(.*)/\1=9093/g" config/server-1.properties````
-	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
-	/usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
+##	cp config/server.properties config/server-1.properties 
+##	sed -r -i "s/(broker.id)=(.*)/\1=1/g" config/server-1.properties 
+##	sed -r -i "s/^(port)=(.*)/\1=9093/g" config/server-1.properties````
+#	chmod u+x /usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh
+#	/usr/local/kafka/kafka_${kafkaversion}-${version}/bin/kafka-server-start.sh /usr/local/kafka/kafka_${kafkaversion}-${version}/config/server.properties &
 }
 
 # Primary Install Tasks
